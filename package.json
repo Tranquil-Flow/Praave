@@ -1,0 +1,7 @@
+{
+    "name": "init",
+    "dependencies": {
+        "@railgun-community/quickstart": "^5.1.0",
+        "fs": "^0.0.1-security"
+    }
+}
