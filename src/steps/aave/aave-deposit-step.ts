@@ -19,7 +19,7 @@ import {
   export class AaveDepositStep extends Step {
     readonly config: StepConfig = {
         name: 'Aave Pool Deposit',
-        description: 'Deposits WETH into Aave Pool contract',
+        description: 'Deposits WMATIC into Aave Pool contract',
     };
 
     private readonly asset: Optional<string>;
@@ -48,8 +48,8 @@ import {
       const { erc20Amounts } = input;
       
       const depositERC20Decimals = BigInt(18);    // TO-DO: Remove hardcoded variables
-      const wethPool = '0xe7ec1b0015eb2adeedb1b7f9f1ce82f9dad6df08';            // Sepolia Aave Pool
-      const aEthWETHAddress = '0x02c3e5420527D75c1c864a58D6a2A73B0EfbfA4D'      // Sepolia aEthWETH
+      const maticPool = '0xb77fc84a549ecc0b410d6fa15159C2df207545a3';      // Polygon Aave Pool
+      const aPolWMATIC = '0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97'      // Polygon aPolWMATIC
 
       const depositERC20Info: RecipeERC20Info = {
         tokenAddress: this.asset,
@@ -60,11 +60,11 @@ import {
         erc20Amounts,
         erc20Amount =>
           compareERC20Info(erc20Amount, depositERC20Info) &&
-          isApprovedForSpender(erc20Amount, wethPool),
+          isApprovedForSpender(erc20Amount, maticPool),
         undefined, // amount
       );
 
-      const contract = new AavePoolContract(wethPool);
+      const contract = new AavePoolContract(maticPool);
       const crossContractCall = await contract.createSupply(
         this.asset,
         this.amount,
@@ -81,7 +81,7 @@ import {
         recipient: `Pool Vault`,
       };
       const outputERC20Amount: StepOutputERC20Amount = {
-        tokenAddress: aEthWETHAddress,
+        tokenAddress: aPolWMATIC,
         decimals: depositERC20Decimals,
         expectedBalance: amountBigIntValue,
         minBalance: amountBigIntValue,

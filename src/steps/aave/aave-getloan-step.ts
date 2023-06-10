@@ -44,15 +44,15 @@ import {
     ): Promise<UnvalidatedStepOutput> {
       
       const receiveERC20Decimals = BigInt(18);    // TO-DO: Remove hardcoded variables
-      const wethPool = '0xe7ec1b0015eb2adeedb1b7f9f1ce82f9dad6df08';            // Sepolia Aave Pool
-      const variableDebtEthDAIAddress = '0x1badcb245082a0E90c41770d47C7B58CBA59af74' // Sepolia Aave Ethereum Variable Debt DAI
+      const maticPool = '0xb77fc84a549ecc0b410d6fa15159C2df207545a3';            // Polygon Aave Pool
+      const variableDebtPolDAIAddress = '0x8619d80FB0141ba7F184CbF22fd724116D9f7ffC' // Aave Polygon Variable Debt DAI
 
       const receiveERC20Info: RecipeERC20Info = {
         tokenAddress: this.asset,
         decimals: receiveERC20Decimals,
       };
 
-      const contract = new AavePoolContract(wethPool);
+      const contract = new AavePoolContract(maticPool);
       const crossContractCall = await contract.createBorrow(
         this.asset,
         this.amount,
@@ -73,7 +73,7 @@ import {
         approvedSpender: undefined,
       };
       const outputvariableDebtEthAmount: StepOutputERC20Amount = {
-        tokenAddress: variableDebtEthDAIAddress,
+        tokenAddress: variableDebtPolDAIAddress,
         decimals: receiveERC20Decimals,
         expectedBalance: amountBigIntValue,
         minBalance: amountBigIntValue,
