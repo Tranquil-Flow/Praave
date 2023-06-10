@@ -2,6 +2,7 @@
     "name": "init",
     "dependencies": {
         "@railgun-community/quickstart": "^5.1.0",
+        "@railgun-community/shared-models": "^5.1.14",
         "ethers": "^6.5.1",
         "fs": "^0.0.1-security"
     }

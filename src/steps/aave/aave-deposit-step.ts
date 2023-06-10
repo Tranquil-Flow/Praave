@@ -17,13 +17,12 @@ import {
   import { ERC20AmountFilter, filterERC20AmountInputs,} from '../../utils/filters';
   import { validateStepOutput } from '../../validators/step-validator';
 
-  export abstract class AaveDepositStep extends Step {
+  export class AaveDepositStep extends Step {
     readonly config: StepConfig = {
         name: 'Aave Pool Deposit',
         description: 'Deposits WETH into Aave Pool contract',
     };
 
-    // input asset is only WETH for PoC. Can code in rather than take input?
     private readonly asset: Optional<String>;
     private readonly amount: Optional<BigNumberish>;
     private readonly onBehalfOf: Optional<string>;
