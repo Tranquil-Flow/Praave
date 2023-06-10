@@ -1,6 +1,6 @@
 import { Recipe } from './recipe';
 import { ApproveERC20SpenderStep, Step } from '../steps';
-import { AaveAPI } from '../api/aave';
+// import { AaveAPI } from '../api/aave';
 import { NetworkName } from '@railgun-community/shared-models';
 import {
     RecipeConfig,

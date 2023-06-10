@@ -3,19 +3,18 @@ import {
     RecipeERC20Info,
     StepConfig,
     StepInput,
-    StepOutput,
+    // StepOutput,
     StepOutputERC20Amount,
     UnvalidatedStepOutput,
   } from '../../models/export-models';
   import { compareERC20Info, isApprovedForSpender } from '../../utils/token';
   import { Step } from '../step';
-  import { AavePoolData } from '../../api/aave';
+  //import { AavePoolData } from '../../api/aave';
   import { AavePoolContract } from '../../contract/aave/aave-pool-contract';
-  import { calculateOutputsForAaveSupply } from './aave-util';
+    // import { calculateOutputsForAaveSupply } from './aave-util';
   import { BigNumberish } from 'ethers';
-  
-  import { ERC20AmountFilter, filterERC20AmountInputs,} from '../../utils/filters';
-  import { validateStepOutput } from '../../validators/step-validator';
+  // import { ERC20AmountFilter, filterERC20AmountInputs,} from '../../utils/filters';
+  // import { validateStepOutput } from '../../validators/step-validator';
 
   export class AaveDepositStep extends Step {
     readonly config: StepConfig = {
@@ -33,7 +32,7 @@ import {
         amount: Optional<BigNumberish>,
         onBehalfOf: Optional<string>,
         referralCode: Optional<BigNumberish>,
-        pool: AavePoolData,
+        // pool: AavePoolData,
     ) {
         super();
         this.asset = asset;
@@ -45,14 +44,12 @@ import {
     protected async getStepOutput(
       input: StepInput,
     ): Promise<UnvalidatedStepOutput> {
-      const {
-        //
-      } = this.SOMETHING;
 
       const { erc20Amounts } = input;
-
+      
       const depositERC20Decimals = BigInt(18);    // TO-DO: Remove hardcoded variables
-      const wethPool = '0xe7ec1b0015eb2adeedb1b7f9f1ce82f9dad6df08';            // Sepolia Aave WETH Pool
+      const wethPool = '0xe7ec1b0015eb2adeedb1b7f9f1ce82f9dad6df08';            // Sepolia Aave Pool
+      const aEthWETHAddress = '0x02c3e5420527D75c1c864a58D6a2A73B0EfbfA4D'      // Sepolia aEthWETH
 
       const depositERC20Info: RecipeERC20Info = {
         tokenAddress: this.asset,
@@ -75,8 +72,27 @@ import {
         this.referralCode
       );
 
+      const amountBigNumberishValue: BigNumberish = this.amount;
+      const amountBigIntValue: bigint = BigInt(amountBigNumberishValue.toString());
+
+      const spentERC20AmountRecipient: RecipeERC20AmountRecipient = {
+        ...depositERC20Info,
+        amount: erc20AmountForStep.expectedBalance,
+        recipient: `Pool Vault`,
+      };
+      const outputERC20Amount: StepOutputERC20Amount = {
+        tokenAddress: aEthWETHAddress,
+        decimals: depositERC20Decimals,
+        expectedBalance: amountBigIntValue,
+        minBalance: amountBigIntValue,
+        approvedSpender: undefined,
+      };
+
       return {
-        
+        crossContractCalls: [crossContractCall],
+        spentERC20Amounts: [spentERC20AmountRecipient],
+        outputERC20Amounts: [outputERC20Amount, ...unusedERC20Amounts],
+        outputNFTs: input.nfts,
       }
       
     };  
