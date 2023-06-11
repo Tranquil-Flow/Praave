@@ -1,5 +1,5 @@
-# PrivyFi
-Private interactions with lending protcols such as Aave utilizing Railgun for privacy preservation. Intended to be used by a browser extension which allows for a user to connect to a dApp with it's existing UI, but calling the contract function calls through the Railgun Relayer so that their interactions are private. For the Proof of Concept we will be utilizing Aave on Polygon.
+# Praave
+Private interactions with lending protcols such as Aave utilizing Railgun for privacy preservation. Intended to be used by a browser extension which allows for a user to connect to a dApp with it's existing UI, but calling the contract function calls through the Railgun Relayer so that their interactions are private. For the Proof of Concept we will be utilizing Aave on Polygon. Beyond this Proof of Concept there is a wide range of possibilities to integrating more popular DeFi dApps on a variety of chains.
 
 ## Railgun Integration
 Railgun allows for users to transact between accounts privately, as well as with smart contracts. By combining this with the browser extension, a seamless UX is available for users who can utilize the UI they are used to while still retaining their privacy. An example flow of how this could work with Aave Protocol when taking out a loan:
@@ -8,7 +8,7 @@ Railgun allows for users to transact between accounts privately, as well as with
 - User calls the supply() function. Normally this deposits WMATIC to the Aave Pool, with Praave the user deposits WMATIC to the Railgun Relayer which in turn deposits on the Aave Pool.
 - User calls the borrow() function. Normally this withdraws DAI from the Aave Pool, with Praave the Railgun Relayer calls the Pool and stores the DAI in the users Railgun Private Balance.
 
-Made with <3 at ETHPrague 2023
+Made with ❤️ at ETHPrague 2023
 
 # Railgun Deployments
 
