@@ -18,6 +18,7 @@ Railgun allows for users to transact between accounts privately, as well as with
 - User calls the borrow() function. Normally this withdraws DAI from the Aave Pool, with Praave the Railgun Relayer calls the Pool and stores the DAI in the users Railgun Private Balance.
 
 # Railgun Deployments
+Please note these deployments are for demonstration purposes and are not meant to be utilised by public users.
 
 ## Optimism
 - Treasury: 0x43EE0387F62a8ed5E15A9d537fAB94dfd229f50F
@@ -38,3 +39,7 @@ Railgun allows for users to transact between accounts privately, as well as with
 ## Base (Base Goerli Testnet)
 - Treasury: 0x55FEf7e9282701ebc5A18c2d751cE7e1123acFFb
 - RailgunSmartWallet: 0x236da70A06dc965d81C1dd4D439a181Af8bf7a73
+
+## Scroll (Alpha Testnet)
+- Treasury: 0x4467C5b8F01680206d0f96F7c7bB5A8506D54B24
+- RailgunSmartWallet: 0xDBCEC270C887bbA9F15696054729872f479DE1a7
