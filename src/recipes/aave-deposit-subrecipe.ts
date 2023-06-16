@@ -1,0 +1,51 @@
+import { Recipe } from './recipe';
+import { ApproveERC20SpenderStep, Step } from '../steps';
+// import { AaveAPI } from '../api/aave';
+import { NetworkName } from '@railgun-community/shared-models';
+import {
+    RecipeConfig,
+    RecipeERC20Info,
+    StepInput,
+} from '../models/export-models';
+import { AaveDepositStep, AaveGetLoanStep } from '../steps/aave';
+import { BigNumberish, ethers } from 'ethers';
+
+export class AaveDepositSubrecipe extends Recipe {
+    readonly config: RecipeConfig = {
+        name: 'Aave Deposit',
+        description:
+            'Deposits WMATIC into Aave Pool'
+    };
+
+    private readonly supportedNetworks: NetworkName[] = [];
+
+    // TO-DO make hardcoded values imported into constructor call
+    constructor(
+        config: RecipeConfig,
+        supportedNetworks: NetworkName[],
+        ) {
+        super();
+        this.config = config;
+        this.supportedNetworks = supportedNetworks;
+    }
+
+    protected supportsNetwork(networkName: NetworkName): boolean {
+        return this.supportedNetworks.includes(networkName);
+    }
+
+    protected async getInternalSteps(
+        firstInternalStepInput: StepInput,
+      ): Promise<Step[]> {
+        const { networkName } = firstInternalStepInput;
+        const spender = '0xe7ec1b0015eb2adeedb1b7f9f1ce82f9dad6df08';   // Aave Pool
+        const matic = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';      // Polygon WMATIC
+        const dai = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063';       // Polygon DAI
+        const referralCode = 0;                                         // Default value submitted when interacting with Aave frontend
+        const maticDepositAmount = 1; // TO-DO: Take input from front end and plug in here
+        const onBehalfOf = '0x19B620929f97b7b990801496c3b361CA5dEf8C71';    // Polygon Railgun Relayer
+        return [
+          new AaveDepositStep(matic, maticDepositAmount, onBehalfOf, referralCode),
+        ];
+      }
+
+}
