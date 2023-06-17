@@ -1,1 +1,19 @@
-node_modules
+# OSX
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+dist/
+.env
+
+# Test
+.nyc_output
+coverage/
+src/test/test-config-overrides.test.ts
+
+# Quickstart assets
+test.db
+artifacts-*

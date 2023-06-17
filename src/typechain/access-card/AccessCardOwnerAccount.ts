@@ -66,8 +66,9 @@ export namespace InitializedEvent {
 }
 
 export interface AccessCardOwnerAccount extends BaseContract {
-  connect(runner?: ContractRunner | null): AccessCardOwnerAccount;
-  waitForDeployment(): Promise<this>;
+  connect(runner?: ContractRunner | null): BaseContract;
+  attach(addressOrName: AddressLike): this;
+  deployed(): Promise<this>;
 
   interface: AccessCardOwnerAccountInterface;
 

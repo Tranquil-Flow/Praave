@@ -48,8 +48,9 @@ export interface AccessCardAccountCreatorInterface extends Interface {
 }
 
 export interface AccessCardAccountCreator extends BaseContract {
-  connect(runner?: ContractRunner | null): AccessCardAccountCreator;
-  waitForDeployment(): Promise<this>;
+  connect(runner?: ContractRunner | null): BaseContract;
+  attach(addressOrName: AddressLike): this;
+  deployed(): Promise<this>;
 
   interface: AccessCardAccountCreatorInterface;
 

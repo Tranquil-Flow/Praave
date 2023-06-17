@@ -193,8 +193,9 @@ export namespace TransferEvent {
 }
 
 export interface AccessCardERC721 extends BaseContract {
-  connect(runner?: ContractRunner | null): AccessCardERC721;
-  waitForDeployment(): Promise<this>;
+  connect(runner?: ContractRunner | null): BaseContract;
+  attach(addressOrName: AddressLike): this;
+  deployed(): Promise<this>;
 
   interface: AccessCardERC721Interface;
 

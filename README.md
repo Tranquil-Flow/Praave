@@ -1,45 +1,123 @@
-# Praave
-Private interactions with lending protcols such as Aave utilizing Railgun for privacy preservation. Intended to be used by a browser extension which allows for a user to connect to a dApp with it's existing UI, but calling the contract function calls through the Railgun Relayer so that their interactions are private. For the Proof of Concept we will be utilizing Aave on Polygon. Beyond this Proof of Concept there is a wide range of possibilities to integrating more popular DeFi dApps on a variety of chains.
+[![Unit Tests Actions Status](https://github.com/Railgun-Community/cookbook/actions/workflows/unit-tests.yml/badge.svg?branch=main)](https://github.com/Railgun-Community/cookbook/actions)
 
-Made with ❤️ at ETHPrague 2023
+<!-- [![Integration Tests Actions Status](https://github.com/Railgun-Community/cookbook/actions/workflows/integration-tests.yml/badge.svg?branch=main)](https://github.com/Railgun-Community/cookbook/actions) -->
 
-https://devfolio.co/projects/praave-03ef
-- 🏆Aave: Best Use of Aave with Optimism
-- 🏆Mantle: Best DeFi Project
-- 🏆PWN: PWN
-- 🏆Taiko: Infrastructure
+# RAILGUN Cookbook
 
+Write a Recipe in minutes to convert your dApp to a zkApp.
 
-## Railgun Integration
-Railgun allows for users to transact between accounts privately, as well as with smart contracts. By combining this with the browser extension, a seamless UX is available for users who can utilize the UI they are used to while still retaining their privacy. An example flow of how this could work with Aave Protocol when taking out a loan:
+## Docs and Integration Guide
 
-- User approves WMATIC. Normally this approves the Aave Pool contract to use WMATIC, with Praave the user approves the Railgun Relayer.
-- User calls the supply() function. Normally this deposits WMATIC to the Aave Pool, with Praave the user deposits WMATIC to the Railgun Relayer which in turn deposits on the Aave Pool.
-- User calls the borrow() function. Normally this withdraws DAI from the Aave Pool, with Praave the Railgun Relayer calls the Pool and stores the DAI in the users Railgun Private Balance.
+See the full Integration Guide [here](https://docs.railgun.org/developer-guide/cookbook).
 
-# Railgun Deployments
-Please note these deployments are for demonstration purposes and are not meant to be utilised by public users.
+## Get the Recipe Builder
 
-## Optimism
-- Treasury: 0x43EE0387F62a8ed5E15A9d537fAB94dfd229f50F
-- RailgunSmartWallet: 0xfa48b9d1fF28066b83DB0fB64481146ea26e1ef7
+`yarn add @railgun-community/cookbook`
 
-## Gnosis
-- Treasury: 0x21bef676c07648CE9FBCAF49C4a5fbE2882918fB
-- RailgunSmartWallet: 0x1e8369c068eCcc5dFB848C87ce62c9eaaAd60393
+## Write your own zkApp
 
-## Mantle (Mantle Testnet)
-- Treasury: 0x9Ee6b0FD155FDE766e52B0A3cFC4B51cC95e77Ab
-- RailgunSmartWallet: 0xf4B7A7F63250DF306c6AC03abC00Cb02Ff9b42A0
+The RAILGUN Cookbook gives you the tools to write a "Recipe" to convert your dApp into a zkApp - [private and fully anonymous](https://docs.railgun.org/wiki/learn/privacy-system) for users. Your Recipe can interact with any smart contract using your private balance in [RAILGUN](https://docs.railgun.org/wiki/learn/overview). A Recipe contains a series of smart contact calls that are combined into a multicall.
 
-## Taiko (Alpha-3 Testnet)
-- Treasury: 0x9Ee6b0FD155FDE766e52B0A3cFC4B51cC95e77Ab
-- RailgunSmartWallet: 0xf4B7A7F63250DF306c6AC03abC00Cb02Ff9b42A0
+See the [full zkApp guide here](https://docs.railgun.org/developer-guide/cookbook/write).
 
-## Base (Base Goerli Testnet)
-- Treasury: 0x55FEf7e9282701ebc5A18c2d751cE7e1123acFFb
-- RailgunSmartWallet: 0x236da70A06dc965d81C1dd4D439a181Af8bf7a73
+### Create a new ["Step"](https://docs.railgun.org/developer-guide/cookbook/write/step)
 
-## Scroll (Alpha Testnet)
-- Treasury: 0x4467C5b8F01680206d0f96F7c7bB5A8506D54B24
-- RailgunSmartWallet: 0xDBCEC270C887bbA9F15696054729872f479DE1a7
+Recipes are composed of "Steps," which are enclosed smart contract calls. Every Step has a set of inputs that correspond to a set of outputs: Spent tokens, Output tokens, and Fees. Spent tokens and Fees are eradicated during the Step, and Output tokens will be passed into the next Step as inputs.
+
+For example, a simple [0x Exchange Swap Step](https://github.com/Railgun-Community/cookbook/blob/main/src/steps/swap/zero-x/zero-x-swap-step.ts) will contain a Sell Token as an input, and the outputs will include Sell Token (Spent), Buy Token (Output) and no associated Fees.
+
+Step inputs and outputs are automatically validated to ensure that each input has associated outputs that represent the total value. There is an exception for tokens that are generated mid-Step - new token values become unvalidated Output tokens - they are simply passed to the next Step as inputs.
+
+### Convert Steps into a ["Recipe"](https://docs.railgun.org/developer-guide/cookbook/write/recipe)
+
+Recipes combine Steps into functional, complex actions. Most integrations will require 1-2 Recipes, and a number of Steps for each Recipe. Steps are generic building blocks, making them multi-purpose and reusable for various Recipes. Upon execution (`recipe.getRecipeOutput(recipeInput)`), the Cookbook automatically sandwiches the Recipe's transactions inside of [Unshield](https://docs.railgun.org/wiki/learn/unshielding-tokens) and [Shield](https://docs.railgun.org/wiki/learn/shielding-tokens) calls, calculating the associated fees with each Step, and providing the developer with a formatted list of Steps, their outputs, and the final array of [populated transactions](https://docs.ethers.org/v5/api/utils/transactions/).
+
+As an example, a simple 0x Exchange Swap call has a pre-requisite: the Sell Token must be approved for spending by the 0x contract. So, the [0x Swap Recipe](https://github.com/Railgun-Community/cookbook/blob/main/src/recipes/swap/zero-x-swap-recipe.ts) has two Steps: (1) Approve sell token, (2) Swap sell token for buy token. The full Recipe uses a Step called [ApproveERC20SpenderStep](https://github.com/Railgun-Community/cookbook/blob/main/src/steps/token/erc20/approve-erc20-spender-step.ts), which is a common Step among most integrations.
+
+> Note that each Recipe must assume a clean slate – since it's executed in a public setting (the RAILGUN Relay Adapt Contract), developers should assume that the Relay Adapt contract does not have approval to spend tokens with any token contract. This is why the [ApproveERC20SpenderStep](https://github.com/Railgun-Community/cookbook/blob/main/src/steps/token/erc20/approve-erc20-spender-step.ts) is a basic requirement for nearly every Recipe.
+
+### Combine Recipes into a ["Combo Meal"](https://docs.railgun.org/developer-guide/cookbook/write/combo-meals)
+
+Combo Meals are the final frontier – every zkApp Chef's dream. They combine Recipes into very complex interactions, made 100% safe for execution against a private balance using the Cookbook.
+
+For example, there is a [Combo Meal](https://github.com/Railgun-Community/cookbook/blob/main/src/combo-meals/liquidity-vault/uni-v2-like-add-liquidity-beefy-deposit-combo-meal.ts) that combines an "Add Liquidity" Recipe for Uniswap, with a "Deposit Vault" Recipe for Beefy. This gives a user the ability to add liquidity for a token pair on Uniswap, gain the LP token for that pair, and then deposit the LP token into a Beefy Vault to earn yield.
+
+This all occurs in a single validated transaction call, saving network fees and making the user experience simple and delightful.
+
+## Cook up a Recipe for the RAILGUN Quickstart SDK
+
+Given a full Recipe and its inputs, [RAILGUN Quickstart](https://docs.railgun.org/developer-guide/wallet/overview) will generate a [zero-knowledge proof](https://docs.railgun.org/wiki/learn/privacy-system/zero-knowledge-cryptography) and a final serialized transaction for the RAILGUN Relay Adapt contract.
+
+This final transaction can be submitted to the blockchain by any wallet, including a [Relayer](https://docs.railgun.org/wiki/learn/privacy-system/community-relayers).
+
+```
+const swap = new ZeroXSwapRecipe(sellERC20Info, buyERC20Info, slippagePercentage);
+
+// Inputs that will be unshielded from private balance.
+const unshieldERC20Amounts = [{ ...sellERC20Info, amount }];
+
+const recipeInput = { networkName, unshieldERC20Amounts };
+const { crossContractCalls, erc20Amounts } = await swap.getRecipeOutput(recipeInput);
+
+// Outputs to re-shield after the Recipe multicall.
+const shieldERC20Addresses = erc20Amounts.map(({tokenAddress}) => tokenAddress);
+
+// RAILGUN Quickstart will generate a [unshield -> call -> re-shield] transaction enclosing the Recipe multicall.
+
+const {gasEstimate} = await gasEstimateForUnprovenCrossContractCalls(
+    ...
+    unshieldERC20Amounts,
+    ...
+    shieldERC20Addresses,
+    ...
+    crossContractCalls,
+    ...
+)
+await generateCrossContractCallsProof(
+    ...
+    unshieldERC20Amounts,
+    ...
+    shieldERC20Addresses,
+    ...
+    crossContractCalls,
+    ...
+)
+const {transaction} = await populateProvedCrossContractCalls(
+    ...
+    unshieldERC20Amounts,
+    ...
+    shieldERC20Addresses,
+    ...
+    crossContractCalls,
+    ...
+);
+
+// Submit transaction to RPC.
+await wallet.sendTransaction(transaction);
+
+// Note: use @railgun-community/waku-relayer-client to submit through a Relayer instead of signing with your own wallet.
+```
+
+# Testing
+
+## Unit tests
+
+`yarn test` to run tests without RPC Fork.
+
+## Integration tests with RPC Fork
+
+### Setup:
+
+1. Set up anvil (install [foundryup](https://book.getfoundry.sh/getting-started/installation)): `curl -L https://foundry.paradigm.xyz | bash`
+
+2. Add an Ethereum RPC for fork: `export ETHEREUM_RPC_URL='your/rpc/url'`
+
+### Run fork tests:
+
+1. Fork tests currently support networks: Ethereum, Arbitrum
+
+2. Run anvil fork with an RPC URL and load test account with 1000 ETH: `./run-anvil Ethereum https://your/ethereum/rpc/url`
+
+- See [Chainlist](https://chainlist.org/) or [Pokt](https://docs.pokt.network/use/public-rpc/) for public RPC endpoints (however paid RPCs are recommended for stability).
+
+3. Run tests (in another terminal): `env NETWORK_NAME=Ethereum yarn test-fork`.
